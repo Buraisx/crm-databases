@@ -48,8 +48,14 @@ class CRM
     print 'Enter a Note: '
     note = gets.chomp
 
-    Contact.create(first_name, last_name, email, note)
-  end
+    contact = Contact.create(
+      first_name: first_name,
+      last_name:  last_name,
+      email:      email,
+      note:       note
+    )
+
+      end
 
   def modify_existing_contact
     puts "Which contact would you like to edit?  Enter ID"
@@ -59,26 +65,29 @@ class CRM
     attrb = gets.chomp
     puts "whats the new value."
     value = gets.chomp
-    Contact.update(id,attrb,value)
+    edit = Contact.find_by_id(id)
+    edit.update(attrb, value)
+    puts edit
   end
 
   def delete_contact
     puts "Which contact would you like to delete?  Enter ID"
     id = gets.chomp.to_i
-    Contact.delete(id)
+    available_contact = Contact.find_by_id(id)
+    Contact.delete(available_contact)
   end
 
   def display_all_contacts
-    puts "#{Contact.all}"
+    puts "#{Contact.all.inspect}"
   end
 
   def search_by_attribute
     puts "Which attribute would you like to search by?"
-    puts "first_name \n last_name \n email"
+    puts "first_name: \nlast_name:\nemail:"
     attrb = gets.chomp
     puts "Whats the value you want to search by?"
     value = gets.chomp
-    puts "#{Contact.find_by(attrb, value)}"
+    puts "#{Contact.find_by(attrb,value).inspect}"
   end
 
   def exit_program
@@ -89,3 +98,6 @@ end
 
 contacts = CRM.new("William")
 contacts.main_menu
+at_exit do
+  ActiveRecord::Base.connection.close
+end
